@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>후보 조회</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="/">Lunch Rounds</a>
+        <div class="ms-auto">
+            <a class="btn btn-outline-light btn-sm" th:href="@{/view/rounds/today}">오늘의 라운드</a>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <h1 class="h3 mb-3">후보 조회</h1>
+
+    <!-- Search Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="get" th:action="@{/view/menu-option}" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">라운드 ID</label>
+                    <input type="number" name="roundId" class="form-control" th:value="${roundId}" placeholder="예: 1">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">음식 종류</label>
+                    <select name="foodType" class="form-select" th:value="${foodType}">
+                        <option th:value="''" th:selected="${foodType == null or foodType == ''}">전체</option>
+                        <option th:value="KOREAN" th:selected="${foodType == 'KOREAN'}">한식</option>
+                        <option th:value="JAPANESE" th:selected="${foodType == 'JAPANESE'}">일식</option>
+                        <option th:value="CHINESE" th:selected="${foodType == 'CHINESE'}">중식</option>
+                        <option th:value="WESTERN" th:selected="${foodType == 'WESTERN'}">양식</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">검색 키워드</label>
+                    <div class="input-group">
+                        <input type="text" name="keyword" class="form-control" th:value="${keyword}" placeholder="예: 찌개, 우동, 고기">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                        <a class="btn btn-outline-secondary" th:href="@{/view/menu-option}">초기화</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Empty -->
+    <div class="alert alert-warning" th:if="${#lists.isEmpty(results)}" role="alert">
+        검색 결과가 없습니다. 조건을 바꿔 다시 시도해보세요.
+    </div>
+
+    <!-- Result Table -->
+    <div th:if="${!#lists.isEmpty(results)}" class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">검색 결과</span>
+            <span class="badge text-bg-info">총 <span th:text="${#lists.size(results)}">0</span>건</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th style="width:90px">ID</th>
+                    <th style="width:110px">라운드ID</th>
+                    <th>메뉴</th>
+                    <th style="width:140px">종류</th>
+                    <th style="width:140px" class="text-end">가격</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${results}">
+                    <td class="text-muted" th:text="${c.id}">1</td>
+                    <td th:text="${c.roundId}">3</td>
+                    <td class="fw-semibold" th:text="${c.menu}">부대찌개</td>
+                    <td>
+                        <span class="badge text-bg-secondary" th:text="${c.type}">KOREAN</span>
+                    </td>
+                    <td class="text-end">
+                        <span th:text="${#numbers.formatInteger(c.price, 0, 'COMMA')}">9,000</span> 원
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Optional: simple helper toolbar -->
+        <div class="card-footer bg-white d-flex justify-content-end gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="window.scrollTo({top:0, behavior:'smooth'})">맨 위로</button>
+        </div>
+    </div>
+</main>
+
+<footer class="text-center text-muted small py-4">
+    © Lunch Rounds
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

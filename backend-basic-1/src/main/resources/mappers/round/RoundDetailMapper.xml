@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.sparta.backend1.lunch.mapper.RoundDetailMapper">
+    <select id="findRoundWithOptions" parameterType="long" resultMap="RoundWithOptionsMap">
+        SELECT
+            r.id       AS round_id,
+            r.team_id  AS team_id,
+            t.name     AS team_name,
+            r.date     AS date,
+            r.status   AS status,
+            o.id       AS opt_id,
+            o.menu     AS opt_menu,
+            o.type     AS opt_type,
+            o.price    AS opt_price
+        FROM lunch_round r
+        JOIN team t ON t.id = r.team_id
+        LEFT JOIN menu_option o ON o.round_id = r.id
+        WHERE r.id = #{roundId}
+        ORDER BY o.id ASC
+    </select>
+
+    <resultMap id="RoundWithOptionsMap" type="kr.sparta.backend1.lunch.dto.RoundWithOptionsDto">
+        <id property="id" column="round_id"/>
+        <result property="teamId" column="team_id"/>
+        <result property="teamName" column="team_name"/>
+        <result property="date" column="date" jdbcType="TIMESTAMP"/>
+
+        <result property="status"
+                column="status"
+                javaType="kr.sparta.backend1.lunch.enums.RoundStatus"
+                jdbcType="VARCHAR"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+
+        <collection property="options" ofType="kr.sparta.backend1.lunch.dto.MenuOptionDto">
+            <id property="id" column="opt_id"/>
+            <result property="menu" column="opt_menu"/>
+            <result property="type" column="opt_type"/>
+            <result property="price" column="opt_price" jdbcType="INTEGER"/>
+        </collection>
+    </resultMap>
+
+</mapper>
