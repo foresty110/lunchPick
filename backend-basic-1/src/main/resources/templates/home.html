@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>홈</title>
+</head>
+<body>
+<h1>홈 페이지</h1>
+<p>로그인 후 접근 가능한 페이지 예시입니다.</p>
+
+<a th:href="@{/login}">로그인 페이지로 이동</a> |
+<a th:href="@{/logout}">로그아웃</a> |
+<a th:href="@{/admin/dashboard}">관리자 페이지</a>
+</body>
+</html>
