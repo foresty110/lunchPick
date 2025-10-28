@@ -2,12 +2,8 @@ package kr.sparta.backend1.lunch.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -18,6 +14,7 @@ public class JwtTokenProvider {
 
     private final Key secretKey;
     private final long validityMs = 30 * 60 * 1000; // 30분
+    private final long refreshMs = 7 * 24 * 60 * 60 * 1000; // 7일
     private final JwtParser parser;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secret) { // 32B 이상
@@ -40,6 +37,17 @@ public class JwtTokenProvider {
                 .claim("role", role)
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + validityMs))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    //refreshToken 생성
+    public String createRefreshToken(String username) {
+        long now = System.currentTimeMillis();
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date((now)))
+                .setExpiration(new Date(now + refreshMs))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
