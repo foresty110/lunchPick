@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,7 +36,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String h = req.getHeader("Authorization");
         String token = (h != null && h.startsWith("Bearer ")) ? h.substring(7) : null;
 
-        if (token != null) {
+        if (token == null && req.getCookies() != null) {
+            for (Cookie cookie : req.getCookies()) {
+                if ("Authorization".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+       if (token != null) {
             try {
                 tokens.assertValid(token);//tokens는 header,payload,signature로 분리된 토큰들을 말한다.
                 String username = tokens.getUsername(token);
@@ -58,7 +68,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
                 return;
             }
-        }
+        }//else{
+            //res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+           // res.setContentType("application/json;charset=UTF-8");
+            //res.getWriter().write("{\"status\":\"error\",\"message\":\"토큰이 필요합니다.\"}");
+            //return;
+       // }
 
         chain.doFilter(req, res);
     }

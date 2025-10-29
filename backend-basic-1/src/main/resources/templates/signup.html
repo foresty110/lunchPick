@@ -17,6 +17,7 @@
     <input type="text" id="email" placeholder="아이디" required />
     <input type="password" id="password" placeholder="비밀번호" required />
     <input type="text" id="name" placeholder="이름" required />
+    <input type="checkbox" id="admin"> 관리자
     <button type="submit">회원가입</button>
 
 </form>
@@ -28,23 +29,23 @@
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
         const name = document.getElementById("name").value;
+        const admin = document.getElementById("admin").checked ? true : false;
 
-        const response = await fetch("/sign", {
+        const response = await fetch("/api/auth/signup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"  // JSON으로 전송
             },
-            body: JSON.stringify({ email, password, name })
+            body: JSON.stringify({ email, password, name, admin })
         });
 
-        const message = document.getElementById("message");
+        const data = await response.json(); // 서버에서 JSON으로 메시지 내려준다고 가정
+        console.log(data)
         if (response.ok) {
-            message.style.color = "green";
-            message.textContent = "회원가입 성공!";
+            alert(`회원가입 성공`);
+            window.location.href = "/login"; // 성공 시 이동
         } else {
-            message.style.color = "red";
-            const text = await response.text();
-            message.textContent = `회원가입 실패: ${text}`;
+            alert(`회원가입 실패: ${data.message}`);
         }
     });
 </script>

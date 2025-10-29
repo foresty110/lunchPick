@@ -16,9 +16,9 @@ public class LoginController {
         return "home";  // templates/home.html
     }
 
-    @GetMapping("/sign")
+    @GetMapping("/signup")
     public String signPage() {
-        return "sign";  // templates/home.html
+        return "signup";  // templates/home.html
     }
 
 }

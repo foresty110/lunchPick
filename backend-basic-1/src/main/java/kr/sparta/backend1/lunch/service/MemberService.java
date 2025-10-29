@@ -1,6 +1,7 @@
 package kr.sparta.backend1.lunch.service;
 
 import kr.sparta.backend1.lunch.dto.MemberDto;
+import kr.sparta.backend1.lunch.dto.SignUpRequestDto;
 import kr.sparta.backend1.lunch.entity.Member;
 import kr.sparta.backend1.lunch.exception.NotFoundException;
 import kr.sparta.backend1.lunch.repository.MemberRepository;
@@ -29,12 +30,12 @@ public class MemberService {
 
     public Member getMemberByEmail(String email) {
         return repo.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다. Username: " + email));
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다." + email));
     }
 
 
     @Transactional
-    public Member createMember(MemberDto dto) {
+    public Member createMember(SignUpRequestDto dto) {
         // 이메일 중복 체크
         if (repo.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다: " + dto.getEmail());
@@ -45,10 +46,17 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
         }
 
+        String admin = "USER";
+        if (dto.getAdmin() == true )
+        {
+            admin = "ADMIN";
+        }
+
         Member m = Member.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role("USER")
+                .name(dto.getName())
+                .role(admin)
                 .build();
         repo.save(m);
         return m;

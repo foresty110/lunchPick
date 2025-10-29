@@ -4,6 +4,7 @@ import kr.sparta.backend1.lunch.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,8 +36,8 @@ public class SecurityConfig {
                 .httpBasic(b -> b.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        //.requestMatchers(HttpMethod.POST, "/api/products/new", "/api/products/**/edit").hasRole("ADMIN")
-                        .requestMatchers("/api/products/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/products/new", "/api/products/**/edit").hasRole("ADMIN")
+                        .requestMatchers("/api/member/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex
@@ -63,38 +64,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-//
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/auth/**", "/login").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .formLogin(login -> login
-//                        .loginPage("/login")
-//                        .loginProcessingUrl("/login")
-//                        .usernameParameter("username")  // 기본값 그대로 사용
-//                        .passwordParameter("password")
-//                        .defaultSuccessUrl("/home", true)
-//                        .permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .logoutUrl("/logout")
-//                        .logoutSuccessUrl("/login?logout=true")
-//                )
-//                .csrf(csrf -> csrf.disable());
-//
-//        return http.build();
-//    }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.authorizeHttpRequests(auth ->auth.requestMatchers("/products/**").authenticated()) // 이 url 패턴을 가지면 지정한 인증 폼을 거치도록 해라
-//                //.authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) //임시로 모두 허용
-//                .formLogin(withDefaults()) //로그인 폼 기본 제공으로 설정
-//                .csrf(csrf -> csrf.disable()); // 외부 접근 설정
-//        return http.build();
-//    }
-
 }

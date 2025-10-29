@@ -19,14 +19,13 @@ public class Member {
     @Id
     @GeneratedValue
     private Long id;
-
     @Column(nullable = false, length = 50, unique = true)
     private String email;  // 로그인 ID
     @NotNull
     @Column(length = 100)
     private String password; // 비밀번호
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50)
     private String name;  // 회원 이름
-    private String role = "User";
+    private String role = "USER";
 
 }

@@ -2,8 +2,13 @@ package kr.sparta.backend1.lunch.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -66,5 +71,20 @@ public class JwtTokenProvider {
     public String getRole(String token) {
         Object v = parser.parseClaimsJws(token).getBody().get("role");
         return v == null ? null : v.toString();
+    }
+
+    // JWT Cookie 에 저장
+    public void addJwtToCookie(String token, HttpServletResponse res) {
+        try {
+            token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+
+            Cookie cookie = new Cookie("Authorization", token); // Name-Value
+            cookie.setPath("/");
+
+            // Response 객체에 Cookie 추가
+            res.addCookie(cookie);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("인코딩 에러 :"+e.getMessage());
+        }
     }
 }
