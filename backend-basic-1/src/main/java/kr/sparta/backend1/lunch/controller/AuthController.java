@@ -1,6 +1,7 @@
 package kr.sparta.backend1.lunch.controller;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.validation.Valid;
 import kr.sparta.backend1.lunch.dto.BaseResponse;
 import kr.sparta.backend1.lunch.dto.LoginRequestDto;
 import kr.sparta.backend1.lunch.dto.MemberDto;
@@ -12,6 +13,7 @@ import kr.sparta.backend1.lunch.service.MemberService;
 import lombok.*;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +21,7 @@ import java.util.Map;
 
 //@Tag(name = "인증 API", description = "회원가입 및 로그인 관련 API")
 @RestController
-@RequestMapping("/api/auth")
+//@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -29,30 +31,28 @@ public class AuthController {
     private final RefreshTokenStore refreshTokenStore;
 
     //@Operation(summary = "회원가입", description = "새로운 회원을 등록합니다.")
-    @PostMapping("/signup")
+    @PostMapping("/sign")
     public ResponseEntity<BaseResponse<MemberResponseDto>> signup(@Validated @RequestBody MemberDto dto) {
+
         Member member = memberService.createMember(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BaseResponse.created(
-                        new MemberResponseDto(member.getUsername(),
+                        new MemberResponseDto(member.getEmail(),
                                 member.getPassword())));
     }
 
 
     //@Operation(summary = "로그인", description = "회원 로그인 후 JWT 토큰을 발급받습니다.")
     @PostMapping("/login")
-//    public ResponseEntity<BaseResponse<Map<String, String>>> login(
-//    public ResponseEntity<BaseResponse<?>> login(@RequestParam String username,@RequestParam String password){
-    public ResponseEntity<BaseResponse<Map<String, String>>> login(@RequestBody LoginRequestDto request) {
-        Member member = memberService.getMemberByUsername(request.getUsername());
-
+   public ResponseEntity<BaseResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequestDto request) {
+        Member member = memberService.getMemberByEmail(request.getEmail());
 
         if (member != null && passwordEncoder.matches(request.getPassword(), member.getPassword())) {
-            String accessToken = jwtTokenProvider.createToken(member.getUsername(), member.getRole());
-            String refreshToken = jwtTokenProvider.createRefreshToken(member.getUsername());
+            String accessToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
+            String refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
 
             // Refresh Token 저장
-            refreshTokenStore.save(member.getUsername(), refreshToken);
+            refreshTokenStore.save(member.getEmail(), refreshToken);
 
             return ResponseEntity.ok(BaseResponse.success(Map.of(
                     "accessToken", accessToken,
@@ -81,7 +81,7 @@ public class AuthController {
             }
 
             // 새로운 access token 생성하기
-            Member member = memberService.getMemberByUsername(username);
+            Member member = memberService.getMemberByEmail(username);
             String newAccessToken = jwtTokenProvider.createToken(username, member.getRole());
             return ResponseEntity.ok(BaseResponse.success(Map.of(
                     "accessToken", newAccessToken

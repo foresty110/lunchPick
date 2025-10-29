@@ -47,7 +47,7 @@ public class MemberController {
         }
 
         // userDetails.getUsername()은 로그인 시 사용한 username을 반환
-        Member member = memberService.getMemberByUsername(userDetails.getUsername());
+        Member member = memberService.getMemberByEmail(userDetails.getUsername());
         if (member == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(BaseResponse.error("회원 정보를 찾을 수 없습니다."));
@@ -62,9 +62,9 @@ public class MemberController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<Member>> getMember(
             //@Parameter(description = "회원 ID", example = "1", required = true)
-            @PathVariable String username
+            @PathVariable String email
     ) {
-        var member = memberService.getMemberByUsername(username);
+        var member = memberService.getMemberByEmail(email);
         return ResponseEntity.ok(BaseResponse.success(member));
     }
 

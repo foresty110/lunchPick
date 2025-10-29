@@ -15,12 +15,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // username으로 회원 조회
-        Member member = memberRepository.findByUsername(username)
+        Member member = memberRepository.findByEmail(username)
                 .orElseThrow(() -> new IllegalStateException("사용자를 찾을 수 없습니다."));
 //                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
 
         return User.builder()
-                .username(member.getUsername())  // username 사용
+                .username(member.getEmail())  // username 사용
                 .password(member.getPassword())
                 .roles(member.getRole())
                 .build();

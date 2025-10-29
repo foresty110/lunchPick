@@ -15,4 +15,10 @@ public class LoginController {
     public String homePage() {
         return "home";  // templates/home.html
     }
+
+    @GetMapping("/sign")
+    public String signPage() {
+        return "sign";  // templates/home.html
+    }
+
 }

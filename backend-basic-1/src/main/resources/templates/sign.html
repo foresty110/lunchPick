@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>로그인</title>
+    <title>회원가입</title>
     <style>
         body { font-family: Arial; text-align: center; margin-top: 100px; }
         form { display: inline-block; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
@@ -13,41 +13,38 @@
 <body>
 <h2>로그인</h2>
 
-<form id="loginForm">
-
+<form id="signForm">
     <input type="text" id="email" placeholder="아이디" required />
     <input type="password" id="password" placeholder="비밀번호" required />
-    <button type="submit">로그인</button>
+    <input type="text" id="name" placeholder="이름" required />
+    <button type="submit">회원가입</button>
 
 </form>
 
-<a href="/sign">
-    <button>회원가입</button>
-</a>
 <script>
-    console.log("JS 파일/스크립트가 실행됨");
-</script>
-<script>
-    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    document.getElementById("signForm").addEventListener("submit", async function(e) {
         e.preventDefault(); // 기본 form 제출 막기
 
-        const username = document.getElementById("email").value;
+        const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
+        const name = document.getElementById("name").value;
 
-        const response = await fetch("/login", {
+        const response = await fetch("/sign", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"  // JSON으로 전송
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email, password, name })
         });
-        const data = await response.json(); // 서버에서 JSON으로 메시지 내려준다고 가정
-        console.log(data)
+
+        const message = document.getElementById("message");
         if (response.ok) {
-            alert(`로그인 성공: ${data.message}`);
-            window.location.href = "/home"; // 성공 시 이동
+            message.style.color = "green";
+            message.textContent = "회원가입 성공!";
         } else {
-            alert(`로그인 실패: ${data.error}`);
+            message.style.color = "red";
+            const text = await response.text();
+            message.textContent = `회원가입 실패: ${text}`;
         }
     });
 </script>

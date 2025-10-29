@@ -2,6 +2,7 @@ package kr.sparta.backend1.lunch.service;
 
 import kr.sparta.backend1.lunch.dto.MemberDto;
 import kr.sparta.backend1.lunch.entity.Member;
+import kr.sparta.backend1.lunch.exception.NotFoundException;
 import kr.sparta.backend1.lunch.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -23,23 +24,20 @@ public class MemberService {
 
     public Member getMemberById(Long id) {
         return repo.findById(id)
-                .orElseThrow(() -> new IllegalStateException("회원을 찾을 수 없습니다. ID: " + id));
-
-//                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다. ID: " + id));
+               .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다. ID: " + id));
     }
 
-    public Member getMemberByUsername(String username) {
-        return repo.findByUsername(username)
-                .orElseThrow(() -> new IllegalStateException("회원을 찾을 수 없습니다. Username: " + username));
-                //.orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다. Username: " + username));
+    public Member getMemberByEmail(String email) {
+        return repo.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다. Username: " + email));
     }
 
 
     @Transactional
     public Member createMember(MemberDto dto) {
-        // 아이디 중복 체크
-        if (repo.existsByUsername(dto.getUsername())) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다: " + dto.getUsername());
+        // 이메일 중복 체크
+        if (repo.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다: " + dto.getEmail());
         }
 
         // 비밀번호 필수 체크
@@ -48,7 +46,7 @@ public class MemberService {
         }
 
         Member m = Member.builder()
-                .username(dto.getUsername())
+                .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role("USER")
                 .build();
