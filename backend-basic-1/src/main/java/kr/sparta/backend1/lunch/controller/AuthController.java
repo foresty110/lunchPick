@@ -49,7 +49,7 @@ public class AuthController {
             String accessToken = jwtTokenProvider.createToken(member.getEmail(), member.getRole());
             String refreshToken = jwtTokenProvider.createRefreshToken(member.getEmail());
 
-            //세션 저장
+            //쿠키 저장
             jwtTokenProvider.addJwtToCookie(accessToken, response);
 
             // Refresh Token 저장
@@ -69,7 +69,7 @@ public class AuthController {
 
     //@Operation(summary = "Access Token 재발급", description = "Refresh Token을 사용해 새로운 Access Token을 발급합니다.")
     @PostMapping("/refresh")
-    public ResponseEntity<BaseResponse<Map<String, String>>> refreshToken(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<BaseResponse<Map<String, String>>> refreshToken(@RequestHeader("Authorization") String bearerToken,HttpServletResponse response) {
         String refreshToken = bearerToken.replace("Bearer ", "");
 
         try {
@@ -84,8 +84,13 @@ public class AuthController {
             // 새로운 access token 생성하기
             Member member = memberService.getMemberByEmail(username);
             String newAccessToken = jwtTokenProvider.createToken(username, member.getRole());
+
+            //쿠키 저장
+            jwtTokenProvider.addJwtToCookie(newAccessToken, response);
+
             return ResponseEntity.ok(BaseResponse.success(Map.of(
-                    "accessToken", newAccessToken
+                    "accessToken", newAccessToken,
+                    "refreshToken",refreshToken
             )));
 
         } catch (JwtException e) {

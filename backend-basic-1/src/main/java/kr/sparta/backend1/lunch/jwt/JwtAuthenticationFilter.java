@@ -33,6 +33,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws ServletException, IOException {
 
+        String path = req.getRequestURI();
+        if ("/login".equals(path) || path.startsWith("/api/auth/")) {
+            chain.doFilter(req, res); // 필터 스킵
+            return;
+        }
+
         String h = req.getHeader("Authorization");
         String token = (h != null && h.startsWith("Bearer ")) ? h.substring(7) : null;
 
@@ -46,20 +52,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
        if (token != null) {
-            try {
-                tokens.assertValid(token);//tokens는 header,payload,signature로 분리된 토큰들을 말한다.
-                String username = tokens.getUsername(token);
-                String role = tokens.getRole(token); // 예: "ADMIN"
+           try {
+               tokens.assertValid(token);//tokens는 header,payload,signature로 분리된 토큰들을 말한다.
+               String username = tokens.getUsername(token);
+               String role = tokens.getRole(token); // 예: "ADMIN"
 
-                // 권한 부여
-                Collection<? extends GrantedAuthority> authorities =
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
+               // 권한 부여
+               Collection<? extends GrantedAuthority> authorities =
+                       List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
+               UsernamePasswordAuthenticationToken auth =
+                       new UsernamePasswordAuthenticationToken(username, null, authorities);
 
-                //SecurityContext안에 권한을 저장한다.
-                SecurityContextHolder.getContext().setAuthentication(auth);
+               //SecurityContext안에 권한을 저장한다.
+               SecurityContextHolder.getContext().setAuthentication(auth);
 
             } catch (ExpiredJwtException e) {
                 res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 만료되었습니다.");
@@ -68,12 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
                 return;
             }
-        }//else{
-            //res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-           // res.setContentType("application/json;charset=UTF-8");
-            //res.getWriter().write("{\"status\":\"error\",\"message\":\"토큰이 필요합니다.\"}");
-            //return;
-       // }
+        }
 
         chain.doFilter(req, res);
     }

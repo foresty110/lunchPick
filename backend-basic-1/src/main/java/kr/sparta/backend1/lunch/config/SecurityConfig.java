@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 res.setContentType("application/json;charset=UTF-8");
                                 res.getWriter().write("{\"status\":\"error\",\"message\":\"인증이 필요합니다.\"}");
                             } else {
-                                res.sendRedirect("/login");
+                                res.sendRedirect("/api/auth/refresh");
                             }
                         })
                         .accessDeniedHandler((req, res, e) -> {

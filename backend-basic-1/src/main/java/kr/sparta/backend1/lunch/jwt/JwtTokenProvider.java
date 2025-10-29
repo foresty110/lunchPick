@@ -18,7 +18,8 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key secretKey;
-    private final long validityMs = 30 * 60 * 1000; // 30분
+    private final long validityMs = 1 * 30 * 500; // 30분
+    //private final long validityMs = 30 * 60 * 1000; // 30분
     private final long refreshMs = 7 * 24 * 60 * 60 * 1000; // 7일
     private final JwtParser parser;
 
