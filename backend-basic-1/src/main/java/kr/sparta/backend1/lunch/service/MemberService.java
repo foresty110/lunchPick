@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository repo;
@@ -62,7 +61,6 @@ public class MemberService {
         return m;
     }
 
-    @Transactional
     public Member updateMember(Long id, MemberDto dto) {
         Member m = getMemberById(id);
        // m.setName(dto.getName());
@@ -75,7 +73,6 @@ public class MemberService {
         return repo.save(m);
     }
 
-    @Transactional
     public void deleteMember(Long id) {
         Member m = getMemberById(id);
         repo.delete(m);

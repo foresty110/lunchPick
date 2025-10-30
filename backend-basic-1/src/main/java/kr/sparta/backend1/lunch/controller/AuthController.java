@@ -39,10 +39,9 @@ public class AuthController {
                                 member.getName())));
     }
 
-
     //@Operation(summary = "로그인", description = "회원 로그인 후 JWT 토큰을 발급받습니다.")
     @PostMapping("/login")
-   public ResponseEntity<BaseResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequestDto request, HttpServletResponse response) {
+    public ResponseEntity<BaseResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequestDto request, HttpServletResponse response) {
         Member member = memberService.getMemberByEmail(request.getEmail());
 
         if (member != null && passwordEncoder.matches(request.getPassword(), member.getPassword())) {

@@ -36,8 +36,8 @@ public class SecurityConfig {
                 .httpBasic(b -> b.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/products/new", "/api/products/**/edit").hasRole("ADMIN")
                         .requestMatchers("/api/member/**").hasRole("ADMIN")
+                        .requestMatchers("/api/rounds/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex

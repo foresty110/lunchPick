@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 @Builder
 @Table(name = "members")
 //Member: 사용자 계정 정보를 담은 entity 클래스
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue
