@@ -1,6 +1,7 @@
 package kr.sparta.backend1.lunch.service;
 
 
+import kr.sparta.backend1.lunch.dto.GetTodayRoundDto;
 import kr.sparta.backend1.lunch.dto.*;
 import kr.sparta.backend1.lunch.entity.Member;
 import kr.sparta.backend1.lunch.entity.Menu;
@@ -15,7 +16,8 @@ import kr.sparta.backend1.lunch.repository.RoundRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -73,6 +75,26 @@ public class RoundService {
         return new RoundCreateResponseDto(
                 round.getId(),
                 member.getId(),
+                round.getDate(),
+                menuDtoList
+        );
+    }
+
+    public GetTodayRoundDto getTodayRound(Authentication auth, LocalDate date) {
+        Member member = memberRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다. ID: " + auth.getName())
+                );
+        Round round = roundRepository.findByMember_IdAndDate(member.getId(),date.now());
+
+        List<Menu> menuList = menuRepository.findAllByRound_Id(round.getId());
+
+        List<MenuDto> menuDtoList = menuList.stream()
+                .map(MenuMapper::toDto)
+                .toList();
+
+        return new GetTodayRoundDto(
+                round.getId(),
+                round.getMember().getName(),
                 round.getDate(),
                 menuDtoList
         );

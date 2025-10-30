@@ -1,20 +1,18 @@
 package kr.sparta.backend1.lunch.dto;
 
-import kr.sparta.backend1.lunch.enums.RoundStatus;
-
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class RoundTodayDto {
 
     private Long roundId;
     private Long teamId;
     private String teamName;
-    private LocalDateTime date;
+    private LocalDate date;
     private String status;
 
     public RoundTodayDto() {}
 
-    public RoundTodayDto(Long roundId, Long teamId, String teamName, LocalDateTime date, String status) {
+    public RoundTodayDto(Long roundId, Long teamId, String teamName, LocalDate date, String status) {
         this.roundId = roundId;
         this.teamId = teamId;
         this.teamName = teamName;
@@ -46,11 +44,11 @@ public class RoundTodayDto {
         this.teamName = teamName;
     }
 
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

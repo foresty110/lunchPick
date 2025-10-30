@@ -2,12 +2,10 @@ package kr.sparta.backend1.lunch.entity;
 
 import jakarta.persistence.*;
 
-import kr.sparta.backend1.lunch.dto.MenuDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @Entity
@@ -20,11 +18,11 @@ public class Round extends BaseEntity {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "memeber_id")
-    private Member userId;
-    private String date;
+    private Member member;
+    private LocalDate date;
 
-    public Round(Member userId, String date) {
-        this.userId = userId;
+    public Round(Member member, LocalDate date) {
+        this.member = member;
         this.date = date;
     }
 }
